@@ -15,7 +15,7 @@ https://www.jianshu.com/p/c0222de2faed
 [![](https://jitpack.io/v/zhaolewei/ZlwAudioRecorder.svg)](https://jitpack.io/#zhaolewei/ZlwAudioRecorder)
 
     dependencies {
-	        implementation 'com.github.zhaolewei:ZlwAudioRecorder:v1.08'
+	        implementation 'com.github.xiaobingbai:ZlwAudioRecorder:v1.1.0'
 	}
 
     allprojects {
