@@ -332,13 +332,13 @@ public class RecordHelper {
                 short[] newByteBuffer = new short[bufferSize];
 
                 while (state == RecordState.RECORDING) {
-                    int end = audioRecord.read(byteBuffer, 0, byteBuffer.length);
                     double factor = Math.pow(10,5);
                     amplifyPCMData(byteBuffer,byteBuffer.length,newByteBuffer,currentConfig.getSampleRate(), (float) factor);
+                    int end = audioRecord.read(newByteBuffer, 0, newByteBuffer.length);
                     if (mp3EncodeThread != null) {
-                        mp3EncodeThread.addChangeBuffer(new Mp3EncodeThread.ChangeBuffer(byteBuffer, end));
+                        mp3EncodeThread.addChangeBuffer(new Mp3EncodeThread.ChangeBuffer(newByteBuffer, end));
                     }
-                    notifyData(ByteUtils.toBytes(byteBuffer));
+                    notifyData(ByteUtils.toBytes(newByteBuffer));
                 }
                 audioRecord.stop();
             } catch (Exception e) {
