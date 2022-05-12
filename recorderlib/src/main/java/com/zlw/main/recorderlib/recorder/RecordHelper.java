@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -286,9 +287,11 @@ public class RecordHelper {
                 fos = new FileOutputStream(tmpFile);
                 audioRecord.startRecording();
                 byte[] byteBuffer = new byte[bufferSize];
-
                 while (state == RecordState.RECORDING) {
                     int end = audioRecord.read(byteBuffer, 0, byteBuffer.length);
+                    for (int i = 0; i < end; i++) {
+                        byteBuffer[i] = (byte) (byteBuffer[i] * 10);
+                    }
                     notifyData(byteBuffer);
                     fos.write(byteBuffer, 0, end);
                     fos.flush();
