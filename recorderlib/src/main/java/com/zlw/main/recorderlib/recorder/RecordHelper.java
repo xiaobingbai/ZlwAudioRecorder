@@ -196,7 +196,7 @@ public class RecordHelper {
         });
     }
 
-    private FftFactory fftFactory = new FftFactory(FftFactory.Level.Original);
+    private FftFactory fftFactory = new FftFactory(FftFactory.Level.People);
 
     private void notifyData(final byte[] data) {
         if (recordDataListener == null && recordSoundSizeListener == null && recordFftDataListener == null) {
@@ -329,9 +329,12 @@ public class RecordHelper {
             try {
                 audioRecord.startRecording();
                 short[] byteBuffer = new short[bufferSize];
+                short[] newByteBuffer = new short[bufferSize];
 
                 while (state == RecordState.RECORDING) {
                     int end = audioRecord.read(byteBuffer, 0, byteBuffer.length);
+                    double factor = Math.pow(10,5);
+                    amplifyPCMData(byteBuffer,byteBuffer.length,newByteBuffer,currentConfig.getSampleRate(), (float) factor);
                     if (mp3EncodeThread != null) {
                         mp3EncodeThread.addChangeBuffer(new Mp3EncodeThread.ChangeBuffer(byteBuffer, end));
                     }
@@ -466,7 +469,29 @@ public class RecordHelper {
         String fileName = String.format(Locale.getDefault(), "record_tmp_%s", FileUtils.getNowString(new SimpleDateFormat("yyyyMMdd_HH_mm_ss", Locale.SIMPLIFIED_CHINESE)));
         return String.format(Locale.getDefault(), "%s%s.pcm", fileDir, fileName);
     }
-
+    public void amplifyPCMData(short[] pData, int nLen, short[] data2, int nBitsPerSample, float multiple){
+        int nCur = 0;
+        if (16 == nBitsPerSample){
+            while (nCur < nLen){
+                short volum = getShort(pData, nCur);
+                float pcmval = volum * multiple;
+                //volum = (short)(volum * multiple);
+                //数据溢出处理
+                if (pcmval < 32767 && pcmval > -32768){
+                    volum = (short)pcmval;
+                }else if (pcmval > 32767) {
+                    volum = (short)32767;
+                } else if (pcmval < -32768) {
+                    volum = (short)-32768;
+                }
+                data2[nCur] = (byte)(volum& 0xFF);
+                nCur += 2;
+            }
+        }
+    }
+    private short getShort(short[] data, int start){
+        return (short)((data[start] & 0xFF) | (data[start+1] << 8));
+    }
     /**
      * 表示当前状态
      */
