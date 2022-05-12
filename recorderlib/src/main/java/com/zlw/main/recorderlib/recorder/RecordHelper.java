@@ -471,7 +471,7 @@ public class RecordHelper {
     }
     public void amplifyPCMData(short[] pData, int nLen, short[] data2, int nBitsPerSample, float multiple){
         int nCur = 0;
-        if (16 == nBitsPerSample){
+        if (16000 == nBitsPerSample){
             while (nCur < nLen){
                 short volum = getShort(pData, nCur);
                 float pcmval = volum * multiple;
